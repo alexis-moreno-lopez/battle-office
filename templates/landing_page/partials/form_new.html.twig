@@ -8,7 +8,7 @@
         margin:0;
     }
 </style>
-
+{{ form_start(CommandeType) }}
 {# Etape 2 #}
 <div class="card step_2">
     <div class="card-content">
@@ -18,31 +18,43 @@
             <div class="input-field">
                 <input type="text">
                 <label>Prénom</label>
+                {{ form_widget(Commande.lastName) }}
+                {{ form_label(Commande.lastName) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Nom</label>
+                {{ form_widget(Commande.firstName) }}
+                {{ form_label(Commande.firstName) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Adresse</label>
+                {{ form_widget(Commande.adress) }}
+                {{ form_label(Commande.adress) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Complément adr.</label>
+                {{ form_widget(Commande.adressSup) }}
+                {{ form_label(Commande.adressSup) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Ville</label>
+                {{ form_widget(Commandecity) }}
+                {{ form_label(Commande.city) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Code postal</label>
+                {{ form_widget(Commande.cp) }}
+                {{ form_label(Commande.cp) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
@@ -50,25 +62,34 @@
                     <option>France</option>
                 </select>
                 <label>Pays</label>
+                {{ form_widget(Commande.country) }}
+                {{ form_label(Commande.country) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Téléphone</label>
+                {{ form_widget(Commande.phone) }}
+                {{ form_label(Commande.phone) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Email</label>
+                {{ form_widget(Commande.email) }}
+                {{ form_label(Commande.email) }}
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
                 <input type="text">
                 <label>Confirmation email</label>
+                {{ form_widget(Commande.adressSup) }}
+                {{ form_label(Commande.adressSup) }}
                 <div class="form-error"></div>
             </div>
         </div>
     </div>
+    {{ form_end(CommandeType) }}
     <ul class="collapsible">
         <li>
             <div class="collapsible-header"><i class="material-icons">markunread_mailbox</i>Adresse de livraison différente ?</div>
