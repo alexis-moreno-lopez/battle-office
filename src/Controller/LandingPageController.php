@@ -12,7 +12,7 @@ class LandingPageController extends AbstractController
     #[Route('/', name: 'landing_page')]
     public function index(Request $request): Response
     {
-        // Ton code ici
+        // Ton code ici zzzzzzzzzz
 
         return $this->render('landing_page/index_new.html.twig');
     }
