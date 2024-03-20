@@ -25,7 +25,7 @@
             </div>
         </div>
     </section>
-    <form method="post">
+    {{ form_start(form) }}
         <div class="container">
             <div class="row">
                 <div class="content col s12 m12 l8">
@@ -37,9 +37,12 @@
                                 <p class="h6 center-align">Choisissez votre produit</p>
                             </div>
                         </div>
+            {# {{% for %}} #}
+                        {# FAIRE LA BOUCLE DE VOS PRODUITS #}
 
                         <label class="cure-radio">
                             <input name="order[cart][cart_products][0]" value="2" type="radio">
+                            {# ENVOYER L'id du produit dans la value #}
                             <article>
                                 <div class="card center-align">
                                     <div class="row">
@@ -290,5 +293,5 @@
                 </aside>
             </div>
         </div>
-    </form>
+    {{ form_end(form) }}
 {% endblock %}

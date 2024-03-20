@@ -4,25 +4,22 @@ namespace App\Form;
 
 use App\Entity\Commande;
 use App\Entity\DeliveryLocations;
-use DateTime;
-use phpDocumentor\Reflection\Types\Integer;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CommandeType extends AbstractType
+class DeliveryLocationsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('lastName', TextType::class, [
+            ->add('lastName', TextType::class, [
             'label' => 'Nom de famille',
             'required' => false,
         ])
-        
         ->add('firstName', TextType::class, [
             'label' => 'prénom',
             'required' => false,
@@ -53,29 +50,24 @@ class CommandeType extends AbstractType
             'label' => 'Numéro de téléphone',
             'required' => false,
         ])
-        ->add('email', TextType::class, [
-            'label' => 'Email',
-            'required' => false,
-        ])
-        // ->add('createdAt', DateTimeType::class, [
-        //     'label' => 'Date de création',
-        //     'required' => false,
-        // ])
-        // ->add('updatedAt', DateTimeType::class, [
-        //     'label' => 'Date de mise à jour',
-        //     'required' => false,
-        // ])
-        // ->add('deletedAt', DateTimeType::class, [
-        //     'label' => 'Date de suppression',
-        //     'required' => false,
-        // ])
-        ->add('deliveryLocations', DeliveryLocationsType::class)
+            // ->add('email')
+            // ->add('createdAt', null, [
+            //     'widget' => 'single_text',
+            // ])
+            // ->add('updatedAt', null, [
+            //     'widget' => 'single_text',
+            // ])
+            // ->add('deletedAt', null, [
+            //     'widget' => 'single_text',
+            // ])
+            // ->add('product')
         ;
     }
-    public function configureOptions(OptionsResolver $resolver)
+
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Commande::class,
+            'data_class' => DeliveryLocations::class,
         ]);
     }
 }

@@ -31,13 +31,13 @@ class Commande
     private ?string $city = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $cp = null;
+    private ?string $cp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $phone = null;
+    private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
@@ -51,19 +51,22 @@ class Commande
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
 
-    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'commande')]
-    private Collection $payments;
 
     #[ORM\ManyToOne(inversedBy: 'commandes')]
     private ?Product $product = null;
 
-    #[ORM\OneToMany(targetEntity: DeliveryLocations::class, mappedBy: 'commande')]
-    private Collection $deliveryLocations;
+    #[ORM\ManyToOne(inversedBy: 'commandes' ,cascade:["persist"])]
+    private ?DeliveryLocations $deliveryLocations = null;
+
+    #[ORM\OneToOne(inversedBy: 'commande', cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
+
 
     public function __construct()
     {
-        $this->payments = new ArrayCollection();
-        $this->deliveryLocations = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+
     }
 
     public function getId(): ?int
@@ -131,12 +134,12 @@ class Commande
         return $this;
     }
 
-    public function getCp(): ?int
+    public function getCp(): ?string
     {
         return $this->cp;
     }
 
-    public function setCp(?int $cp): static
+    public function setCp(?string $cp): static
     {
         $this->cp = $cp;
 
@@ -155,12 +158,12 @@ class Commande
         return $this;
     }
 
-    public function getPhone(): ?int
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    public function setPhone(?int $phone): static
+    public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
 
@@ -215,36 +218,6 @@ class Commande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Payment>
-     */
-    public function getPayments(): Collection
-    {
-        return $this->payments;
-    }
-
-    public function addPayment(Payment $payment): static
-    {
-        if (!$this->payments->contains($payment)) {
-            $this->payments->add($payment);
-            $payment->setCommande($this);
-        }
-
-        return $this;
-    }
-
-    public function removePayment(Payment $payment): static
-    {
-        if ($this->payments->removeElement($payment)) {
-            // set the owning side to null (unless already changed)
-            if ($payment->getCommande() === $this) {
-                $payment->setCommande(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getProduct(): ?Product
     {
         return $this->product;
@@ -257,32 +230,26 @@ class Commande
         return $this;
     }
 
-    /**
-     * @return Collection<int, DeliveryLocations>
-     */
-    public function getDeliveryLocations(): Collection
+    public function getDeliveryLocations(): ?DeliveryLocations
     {
         return $this->deliveryLocations;
     }
 
-    public function addDeliveryLocation(DeliveryLocations $deliveryLocation): static
+    public function setDeliveryLocations(?DeliveryLocations $deliveryLocations): static
     {
-        if (!$this->deliveryLocations->contains($deliveryLocation)) {
-            $this->deliveryLocations->add($deliveryLocation);
-            $deliveryLocation->setCommande($this);
-        }
+        $this->deliveryLocations = $deliveryLocations;
 
         return $this;
     }
 
-    public function removeDeliveryLocation(DeliveryLocations $deliveryLocation): static
+    public function getPayment(): ?Payment
     {
-        if ($this->deliveryLocations->removeElement($deliveryLocation)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryLocation->getCommande() === $this) {
-                $deliveryLocation->setCommande(null);
-            }
-        }
+        return $this->payment;
+    }
+
+    public function setPayment(?Payment $payment): static
+    {
+        $this->payment = $payment;
 
         return $this;
     }

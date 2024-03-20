@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DeliveryLocationsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DeliveryLocationsRepository::class)]
@@ -29,13 +31,13 @@ class DeliveryLocations
     private ?string $city = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $cp = null;
+    private ?string $cp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $phone = null;
+    private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
@@ -52,8 +54,16 @@ class DeliveryLocations
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $product = null;
 
-    #[ORM\ManyToOne(inversedBy: 'deliveryLocations')]
-    private ?Commande $commande = null;
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'deliveryLocations')]
+    private Collection $commandes;
+
+    public function __construct()
+    {
+        $this->commandes = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable(); 
+    }
+
 
     public function getId(): ?int
     {
@@ -120,12 +130,12 @@ class DeliveryLocations
         return $this;
     }
 
-    public function getCp(): ?int
+    public function getCp(): ?string 
     {
         return $this->cp;
     }
 
-    public function setCp(?int $cp): static
+    public function setCp(?string  $cp): static
     {
         $this->cp = $cp;
 
@@ -144,12 +154,12 @@ class DeliveryLocations
         return $this;
     }
 
-    public function getPhone(): ?int
+    public function getPhone(): ?string 
     {
         return $this->phone;
     }
 
-    public function setPhone(?int $phone): static
+    public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
 
@@ -216,15 +226,34 @@ class DeliveryLocations
         return $this;
     }
 
-    public function getCommande(): ?Commande
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
     {
-        return $this->commande;
+        return $this->commandes;
     }
 
-    public function setCommande(?Commande $commande): static
+    public function addCommande(Commande $commande): static
     {
-        $this->commande = $commande;
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setDeliveryLocations($this);
+        }
 
         return $this;
     }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getDeliveryLocations() === $this) {
+                $commande->setDeliveryLocations(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
