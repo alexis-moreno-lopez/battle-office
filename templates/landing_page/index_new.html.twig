@@ -37,7 +37,7 @@
                                 <p class="h6 center-align">Choisissez votre produit</p>
                             </div>
                         </div>
-            {# {{% for %}} #}
+               {% for product in products %}
                         {# FAIRE LA BOUCLE DE VOS PRODUITS #}
 
                         <label class="cure-radio">
@@ -48,19 +48,19 @@
                                     <div class="row">
                                         <div class="col s12 m12 l4">
                                             <div class="image-content">
-                                                <img src="assets/images/nerf1.jpg" alt="10 Nerf Elite Jolt© + 2 offerts" class="responsive-img">
+                                                <img src="/assets/images/{{ product.picture }}" alt="10 Nerf Elite Jolt© + 2 offerts" class="responsive-img">
                                             </div>
                                         </div>
                                         <div class="col s12 m6 l4">
                                             <div class="card-content">
                                                 <p class="h6">
-                                                    10 Nerf© Elite Jolt
+                                                    {{ product.name }}
                                                 </p>
                                                 <p class="h5 color_brand_secondary">
-                                                    + 4 OFFERTS
+                                                    {{ product.offer }}
                                                 </p>
                                                 <p class="h4">
-                                                    64,90€
+                                                    {{ product.price }}
                                                     <span class="h6"><br>au lieu de <del class="h5 color_brand_secondary">94,90€</del></span>
                                                 </p>
                                             </div>
@@ -83,6 +83,7 @@
                                 </div>
                             </article>
                         </label>
+                        {% endfor  %}
                         <label class="cure-radio">
                             <input name="order[cart][cart_products][0]" value="3" type="radio" checked="checked">
                             <article>

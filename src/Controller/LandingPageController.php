@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Commande;
-use App\Entity\DeliveryLocations;
+use App\Entity\Product;
 use App\Form\CommandeType;
-use App\Form\DeliveryLocationsType;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,30 +13,32 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LandingPageController extends AbstractController
 {
-
-    // Ton code ici
     #[Route('/', name: 'landing_page')]
-    public function index(Request $request, EntityManagerInterface $entityManagerInterface): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, ProductRepository $productRepository, Product $product): Response
     {
-
-        // Ton code ici
+        // Créer une nouvelle instance de Commande et créer le formulaire
         $commande = new Commande();
         $formCommande = $this->createForm(CommandeType::class, $commande);
         $formCommande->handleRequest($request);
 
-        // CHERCHER TOUS VOS PRODUITS 
+        // Récupérer tous les produits
+        $products = $productRepository->findAll();
+
+        // Traiter le formulaire s'il est soumis et valide
         if ($formCommande->isSubmitted() && $formCommande->isValid()) {
-            //  dd($request->request->all()['order']['cart']['cart_products'][0]); RECUPERE l'id DE VOTRE PRODUIT
-
-            $entityManagerInterface->persist($commande);
-            $entityManagerInterface->flush();
-            # code...
+            // récupérer le produit et lui donner
+            $commande->setProduct($product);
+            $entityManager->persist($commande);
+            $entityManager->flush();
+            // Rediriger ou afficher un message de confirmation, etc.
+            $this->sendApiRequest($commande);
+            return $this->redirectToRoute('confirmation');
         }
-        // set les dates si le formulaire est valide 
-        return $this->render('landing_page/index_new.html.twig', [
-            'form' => $formCommande,
-            // ENVOYER VOS PRODUITS DANS LA VUE
 
+        // Passer les données du formulaire et des produits à la vue Twig
+        return $this->render('landing_page/index_new.html.twig', [
+            'form' => $formCommande->createView(),
+            'products' => $products,
         ]);
     }
 
@@ -45,5 +46,44 @@ class LandingPageController extends AbstractController
     public function confirmation(): Response
     {
         return $this->render('landing_page/confirmation.html.twig');
+    }
+
+    public function sendApiRequest(Commande $commande) {
+        $client = new \GuzzleHttp\Client();
+        $client->request('POST', 'https://api-commerce.simplon-roanne.com/order', [
+            'order' => [
+                'id' => $commande->getId(),
+                'product' => $commande->getProduct(),
+                'payment_method' => $commande->getPayment(),
+                'status' => $commande->getPayment(),
+                'client' => [
+                'firstname' => $commande->getFirstName(),
+                'lastname' => $commande->getlastName(),
+                'email' => $commande->getEmail(),
+                 ],
+                'addresses' => [
+                'billing' => [
+
+                
+                'address_line1' => $commande->getAdress(),
+                'address_line2' => $commande->getAdressSup(),
+                'city' => $commande->getCity(),
+                'zipcode' => $commande->getCp(),
+                'country' => $commande->getCountry(),
+                'phone' => $commande->getPhone(),
+                ],
+                'shipping' => [
+                'address_line1' => $commande->getAdress(),
+                'address_line2' => $commande->getAdressSup(),
+                'city' => $commande->getCity(),
+                'zipcode' => $commande->getCp(),
+                'country' => $commande->getCountry(),
+                'phone' => $commande->getPhone(),  
+                ]
+
+ 
+             ]    
+            ]
+        ]);
     }
 }
