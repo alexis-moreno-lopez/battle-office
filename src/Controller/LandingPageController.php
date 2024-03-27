@@ -8,6 +8,7 @@ use App\Repository\ProductRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,6 +51,10 @@ class LandingPageController extends AbstractController
             $this->sendApiRequest($commande);
             return $this->redirectToRoute('confirmation');
 
+            if($paymentMethod->getName() === 'stripe') {
+                return $this->redirectToRoute('stripe_checkout', ['id' => $commande->getId()]);
+            }
+
         }
 
         return $this->render('landing_page/index_new.html.twig', [
@@ -62,12 +67,45 @@ class LandingPageController extends AbstractController
 
 
     #[Route('/confirmation', name: 'confirmation')]
-    public function confirmation(): Response
+    public function confirmation(Commande $commande): Response
     {
         return $this->render('landing_page/confirmation.html.twig');
     }
 
+    #[Route('/stripe-checkout/{id}', name: 'stripe_checkout')]
+    public function stripeCheckout(Commande $commande): RedirectResponse {
+        \Stripe\stripe::setApiKey('sk_test_51Owl6FKZ5p3brdZFsStc5BRt7cwB0Y4DAt5CPw9Mzc44MKA90uyu1XyfH3eU8x5rplremcreo0U0fYdVUYKdpg5f00CmAPeQrY');
+header('Content-Type: application/json');
 
+$YOUR_DOMAIN = 'http://127.0.0.1:8000/';
+
+$checkout_session = \Stripe\Checkout\Session::create([
+    'customer_email' => $commande->getEmail(),
+    'payment_method_types' => ['card'],
+  'line_items' => [[
+    # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+    'price_data' => [
+       'currency' => 'eur', 
+       'product_data' => [
+        'name' => $commande->getProduct()->getName(),
+        
+       ],
+         'unit_amount' => $commande->getProduct()->getPrice(),
+    ],
+    'quantity' => 1,
+  ]],
+  'mode' => 'payment',
+  'success_url' => $YOUR_DOMAIN . 'confirmation/' . $commande->getId(),
+  'cancel_url' => $YOUR_DOMAIN . 'cancel',
+  'automatic_tax' => [
+    'enabled' => true,
+  ],
+
+  
+]);
+
+             return new RedirectResponse($checkout_session->url);
+    }
 
     public function sendApiRequest(Commande $commande)
     {
